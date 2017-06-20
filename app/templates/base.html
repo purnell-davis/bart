@@ -1,0 +1,32 @@
+<html>
+  <head>
+    {% if title %}
+    <title>{{title}}</title>
+    {% else %}
+    <title>TITLE</title>
+    {% endif %}
+  </head>
+  <body>
+    <script>
+        console.log("working..");
+
+        setTimeout(function(){
+
+         console.log("refreshing yo bitchass");
+          window.location = window.location;
+        }, 1000 * 10);
+    </script>
+    <div><a href="/index">Home</a></div>
+    <hr>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+    {% for message in messages %}
+        <li>{{ message }} </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </body>
+</html>
