@@ -1,0 +1,9 @@
+nose
+nose-cov
+pylint
+pytest-cov
+ipython
+flask
+pylint-flask
+Flask-API
+requests
