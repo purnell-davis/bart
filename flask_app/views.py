@@ -1,15 +1,33 @@
-from app import app
-from flask import render_template, flash, redirect
-from forms import StationForm
+'''
+The View/Controller for this app.
+Displays the real time bart schedule for a particular station.
+'''
 import time
+from flask_app import app
+from flask_app.forms import StationForm
+from flask import render_template
 
-import bart
+from flask_app import bart
 
 CURR_STATION = 'mont'
 
+#@TODO: sep validation logic
+    #@TODO: sep data logic
+    #@TODO: views/routes
+    #@TODO: controller
+
+    # get input, validate, get data, display data
+
+#@TODO: logging
+app.logger.debug('A value for debugging')
+
+
+#@TODO: route to stations
 @app.route('/', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
 def index():
+    '''
+    
+    '''
     station_form = StationForm()
 
     global CURR_STATION
@@ -24,8 +42,8 @@ def index():
     destinations = {}
     for destination in schedule['destinations']:
         destinations.setdefault(
-          destination['direction'], []).append(destination)
-        
+            destination['direction'], []).append(destination)
+
     return render_template("index.html",
                            title='BART',
                            curr_time=time.strftime('%I:%M:%S %p'),
@@ -33,13 +51,5 @@ def index():
                            station=schedule['station_name'],
                            destinations=destinations)
 
-'''
-window.location = window.refresh()
-
-window.location.hash 
-"#dsfdsf"
-f = window.location.hash
-"#dsfdsf"
-f.substr(1)
-"dsfdsf"
-'''
+#@TODO: json route
+#@TODO: stations json
