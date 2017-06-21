@@ -7,7 +7,7 @@ from flask_app import app
 from flask_app.forms import StationForm
 from flask import render_template
 
-from flask_app import bart
+from flask_app.models import bart
 
 CURR_STATION = 'mont'
 

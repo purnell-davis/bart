@@ -4,11 +4,11 @@ Functional test, testing the functionality of bart.py.
 '''
 
 import unittest
-import bart
+from flask_app.models import bart
 from mock import patch
 from mock import MagicMock
 
-SAMPLE_XML = \
+ETD_XML = \
 '''<?xml version="1.0" encoding="utf-8"?>
 <root>
     <uri><![CDATA[http://api.bart.gov/api/etd.aspx?cmd=etd&orig=rich]]></uri>
@@ -68,9 +68,9 @@ SAMPLE_XML = \
 
 class Test_schedule(unittest.TestCase):
 
-    @patch('bart.requests.get')
-    def test_dict_is_correct(self, requests_mock):
-        requests_mock.return_value = MagicMock(text=SAMPLE_XML)
+    @patch('flask_app.models.bart.BartRestApi.etd')
+    def test_dict_is_correct(self, api_etd_mock):
+        api_etd_mock.return_value = ETD_XML
         expected_dict = {'station_name': 'Richmond',
                          'station_abbr': 'RICH',
                          'destinations': [
@@ -96,6 +96,53 @@ class Test_schedule(unittest.TestCase):
                                  'length': '6'}]}]}
 
         self.assertEquals(bart.schedule('rich'), expected_dict)
+
+STATION_XML = \
+'''<root>
+    <uri>
+        <![CDATA[ http://api.bart.gov/api/stn.aspx?cmd=stns ]]>
+    </uri>
+    <stations>
+        <station>
+            <name>12th St. Oakland City Center</name>
+            <abbr>12TH</abbr>
+            <gtfs_latitude>37.803768</gtfs_latitude>
+            <gtfs_longitude>-122.271450</gtfs_longitude>
+            <address>1245 Broadway</address>
+            <city>Oakland</city>
+            <county>alameda</county>
+            <state>CA</state>
+            <zipcode>94612</zipcode>
+        </station>
+        <station>
+            <name>16th St. Mission</name>
+            <abbr>16TH</abbr>
+            <gtfs_latitude>37.765062</gtfs_latitude>
+            <gtfs_longitude>-122.419694</gtfs_longitude>
+            <address>2000 Mission Street</address>
+            <city>San Francisco</city>
+            <county>sanfrancisco</county>
+            <state>CA</state>
+            <zipcode>94110</zipcode>
+        </station>
+    </stations>
+    <message/>
+</root>'''
+
+class Test_stations(unittest.TestCase):
+
+    @patch('flask_app.models.bart.BartRestApi.stations')
+    def test_dict_is_correct(self, api_station_mock):
+        api_station_mock.return_value = STATION_XML
+
+        expected_dict = [{'station_name': '12th St. Oakland City Center',
+                          'station_abbr': '12TH'},
+                         {'station_name': '16th St. Mission',
+                          'station_abbr': '16TH'}
+                        ]
+
+        self.assertEquals(bart.stations(), expected_dict)
+
 
 if __name__ == '__main__':
     unittest.main()

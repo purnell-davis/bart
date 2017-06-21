@@ -1,12 +1,14 @@
 '''
-
+Form data.
+This app contains a dropdown menu, listing the BART stations.
 '''
-from flask.ext.wtf import Form
+from flask_wtf import Form
 from wtforms import SelectField
-from flask_app import bart
+from flask_app.models import bart
 
 class StationForm(Form):
     '''
-    
+    Form that contains a dropdown menu containing a list of BART stations.
     '''
-    station = SelectField('station', choices=sorted(bart.STATIONS.items()))
+    stations = sorted([station['station_name'] for station in bart.stations()])
+    station = SelectField('station', choices=stations)

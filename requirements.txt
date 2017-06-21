@@ -8,3 +8,4 @@ pylint-flask
 Flask-WTF
 Flask-API
 requests
+mock

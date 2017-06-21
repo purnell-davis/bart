@@ -1,4 +1,6 @@
 [run]
 omit = 
     .venv/*
-    tests/*
+    flask_app/tests/*
+    config.py
+    run.py
