@@ -3,11 +3,11 @@ Forms.
 
 This app contains a dropdown menu, listing the BART stations.
 '''
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import SelectField
 from flask_app.models import bart
 
-class StationForm(Form):
+class StationForm(FlaskForm):
     '''
     Form that contains a dropdown menu containing a list of BART stations.
     '''
