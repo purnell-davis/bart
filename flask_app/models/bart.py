@@ -2,6 +2,7 @@
 '''
 Python API for using bart REST API.
 '''
+from flask_app import app
 import xml.etree.ElementTree as ET
 import requests
 
@@ -26,6 +27,7 @@ class BartRestApi(object):
         etd_url = 'http://api.bart.gov/api/etd.aspx?cmd=etd&orig=%s&key=%s' \
           % (station, cls.key)
 
+        app.logger.debug('GET %s', etd_url)
         req = requests.get(etd_url)
 
         return req.text
@@ -41,6 +43,7 @@ class BartRestApi(object):
         stns_url = 'http://api.bart.gov/api/stn.aspx?cmd=stns&key=%s' \
           % (cls.key)
 
+        app.logger.debug('GET %s', stns_url)
         req = requests.get(stns_url)
 
         return req.text
@@ -117,6 +120,12 @@ def schedule(station):
     '''
     root = ET.fromstring(BartRestApi.etd(station))
 
+    # error checking
+    if root.find('./message/error') is not None:
+        return {'errors':
+                    [{'text': root.find('./message/error/text').text,
+                      'details': root.find('./message/error/details').text}]}
+
     # get root info
     schedule_data = {}
     schedule_data['station_name'] = root.find('./station/name').text
@@ -127,6 +136,7 @@ def schedule(station):
         _station_destination(etd) for etd in root.findall('./station/etd')]
 
     return schedule_data
+
 
 def stations():
     '''

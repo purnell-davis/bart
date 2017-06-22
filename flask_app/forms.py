@@ -10,5 +10,7 @@ class StationForm(Form):
     '''
     Form that contains a dropdown menu containing a list of BART stations.
     '''
-    stations = sorted([station['station_name'] for station in bart.stations()])
-    station = SelectField('station', choices=stations)
+    stations = [(station['station_abbr'], station['station_name']) \
+        for station in bart.stations()]
+
+    station = SelectField('station', choices=sorted(stations))

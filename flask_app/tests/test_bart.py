@@ -66,6 +66,18 @@ ETD_XML = \
 </root>
 '''
 
+ERROR_XML = \
+'''<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <message>
+        <error>
+            <text>Invalid orig</text>
+            <details>The orig station parameter ETA is missing or invalid.</details>
+        </error>
+    </message>
+</root>
+'''
+
 class Test_schedule(unittest.TestCase):
 
     @patch('flask_app.models.bart.BartRestApi.etd')
@@ -94,6 +106,16 @@ class Test_schedule(unittest.TestCase):
                                  'length': '6'},
                                 {'minutes': '37', 
                                  'length': '6'}]}]}
+
+        self.assertEquals(bart.schedule('rich'), expected_dict)
+
+    @patch('flask_app.models.bart.BartRestApi.etd')
+    def test_error_caught_correctly(self, api_etd_mock):
+        api_etd_mock.return_value = ERROR_XML
+
+        details_msg = 'The orig station parameter ETA is missing or invalid.'
+        expected_dict = {'errors': [{'text': 'Invalid orig',
+                                     'details': details_msg}]}
 
         self.assertEquals(bart.schedule('rich'), expected_dict)
 
@@ -143,6 +165,6 @@ class Test_stations(unittest.TestCase):
 
         self.assertEquals(bart.stations(), expected_dict)
 
-
+    
 if __name__ == '__main__':
     unittest.main()

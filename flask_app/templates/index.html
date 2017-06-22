@@ -1,29 +1,11 @@
-{% extends "base.html" %}
-{% block content %}
-
-<p>
-  <b>{{station}}</b> [{{curr_time}}]
-</p>
-{% for direction, dest_list in destinations.iteritems() %}
-    <p>
-    <u>{{direction}}</u>
-    {% for dest in dest_list %}
-        <p><span style="background-color: {{dest.hexcolor}}"><font face="arial">
-        {{dest.destination_abbr}}
-        {% for estimate in dest.estimates %}
-            {% if estimate.minutes == 'Leaving' %}
-              0({{estimate.length}})
-            {% else %}
-              {{estimate.minutes}}({{estimate.length}})
-            {% endif %}
-        {% endfor %}
-        </font></span></p>
-    {% endfor %}
-    </p>
-{% endfor %}
-
-<form action="" method="post" name="station">
-    {{station_form.hidden_tag()}}
-    <p>{{station_form.station()}} <input type="submit" value="Submit"></p>
-</form>
-{% endblock %}
+<!doctype html>
+<title>All Available API Routes</title>
+<H1>All Available API Routes</H1>
+<dl>
+      {% for full_route, description in routes.items() %}
+            <!-- Should do this work in the python and send this in the routes dict, but wanted to see if jinja could do it -->
+            {% set route = full_route.split('/<')[0] %}
+            <dt><a href="{{ route }}">{{ full_route }}</a></dt>
+            <dd>{{ description }}</dd>
+      {% endfor %}
+</dl>

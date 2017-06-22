@@ -5,51 +5,115 @@ Displays the real time bart schedule for a particular station.
 import time
 from flask_app import app
 from flask_app.forms import StationForm
-from flask import render_template
-
 from flask_app.models import bart
 
-CURR_STATION = 'mont'
+from flask import render_template, jsonify, redirect, url_for
 
-#@TODO: sep validation logic
-    #@TODO: sep data logic
-    #@TODO: views/routes
-    #@TODO: controller
+#@TODO: tests/coverage
+#@TODO: .git to final
+#@TODO: docstrings
+#@TODO: linting
 
-    # get input, validate, get data, display data
-
-#@TODO: logging
-app.logger.debug('A value for debugging')
-
-
-#@TODO: route to stations
-@app.route('/', methods=['GET', 'POST'])
-def index():
+@app.route('/eta', methods=['GET', 'POST'])
+def eta_stations():
     '''
-    
+    Present a list of stations and their respective hyperlinks/routes.
+    '''
+    stations_list = bart.stations()
+    app.logger.info(stations_list)
+
+    return render_template("eta_stations.html", stations=stations_list)
+
+def _reformat_destinations_for_view(destinations):
+    '''
+    Reformats the destinations for injestion into the view template.
+    Sets the direction as a top level attribute for each destination train.
+
+    PARAM destinations dict
+        Destination info to reformat for the view.
+
+    RETURN dict
+        Dictionary of destinations reformatted.
+    '''
+    reformatted_destinations = {}
+
+    # organize each destination within the station direction
+    for destination in destinations:
+        reformatted_destinations.setdefault(
+            destination['direction'], []).append(destination)
+
+    return reformatted_destinations
+
+@app.route('/eta/<station>', methods=['GET', 'POST'])
+def eta(station):
+    '''
+    The view displays the BART real time eta's for trains at a given station.
+    Contains a form which lists the BART stations that can be selected.
+
+    PARAM station str
+        Station to display eta info for.
     '''
     station_form = StationForm()
 
-    global CURR_STATION
+    # manage the form input
     if station_form.validate_on_submit():
-        station = station_form.station.data
-        CURR_STATION = station
-        #return redirect('/index#%s' % (station))
-    else:
-        station = CURR_STATION
+        return redirect(url_for('eta', station=station_form.station.data))
 
+    app.logger.debug('Retrieve station schedule')
     schedule = bart.schedule(station)
-    destinations = {}
-    for destination in schedule['destinations']:
-        destinations.setdefault(
-            destination['direction'], []).append(destination)
+    app.logger.info('Retrieved schedule: %s', schedule)
 
-    return render_template("index.html",
+    # error handling, return 404
+    if schedule.get('errors'):
+        resp = jsonify(schedule)
+        resp.status_code = 404
+        app.logger.error(schedule)
+
+        return resp
+
+    return render_template("eta.html",
                            title='BART',
                            curr_time=time.strftime('%I:%M:%S %p'),
                            station_form=station_form,
                            station=schedule['station_name'],
-                           destinations=destinations)
+                           destinations=_reformat_destinations_for_view(
+                               schedule['destinations']))
 
-#@TODO: json route
-#@TODO: stations json
+def _api_helper():
+    '''
+    Helper method to parse app url map
+
+    RETURN dict
+        Route functions and their docstrings.
+    '''
+    funcs = {}
+    for rule in app.url_map.iter_rules():
+        if rule.endpoint != 'static':
+            funcs[rule.rule] = app.view_functions[rule.endpoint].__doc__
+
+    return funcs
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    '''
+    Index for the app.
+    The view displays the endpoints that can be used.
+    '''
+    func_list = {}
+    for rule in app.url_map.iter_rules():
+        if rule.endpoint != 'static':
+            func_list[rule.rule] = app.view_functions[rule.endpoint].__doc__
+
+    app.logger.info(func_list)
+
+    return render_template("index.html", routes=func_list)
+
+@app.route('/stations', methods=['GET'])
+def stations():
+    '''
+    Lists the available stations to select.
+    '''
+    stations_list = bart.stations()
+    app.logger.info(stations_list)
+
+    return jsonify(stations_list)

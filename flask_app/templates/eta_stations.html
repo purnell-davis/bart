@@ -1,0 +1,8 @@
+<!doctype html>
+<title>ETA Station Routes</title>
+<H1>ETA Station Routes</H1>
+<dl>
+      {% for station in stations %}
+            <dt><a href="eta/{{ station.station_abbr }}">{{ station.station_abbr }}/</a>: {{ station.station_name }}</dt>
+      {% endfor %}
+</dl>
