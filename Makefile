@@ -9,7 +9,7 @@ env:
 	which pylint
 
 lint:
-	pylint --load-plugins pylint_flask --disable=R,C flask_app/*.py
+	pylint --load-plugins pylint_flask --disable=R,C flask_app/*.py flask_app/models/*.py
 
 test:
 	nosetests --with-cov flask_app/tests/*
