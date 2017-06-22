@@ -2,8 +2,8 @@
 '''
 Python API for using bart REST API.
 '''
-from flask_app import app
 import xml.etree.ElementTree as ET
+from flask_app import app
 import requests
 
 class BartRestApi(object):

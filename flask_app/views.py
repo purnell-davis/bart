@@ -11,9 +11,6 @@ from flask_app.models import bart
 from flask import render_template, jsonify, redirect, url_for, \
                   send_from_directory
 
-#@TODO: .git to final
-#@TODO: README
-
 @app.route('/favicon.ico')
 def favicon():
     '''

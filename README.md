@@ -30,7 +30,7 @@ make all
 ```
 
 
-You can verify that pylint, nose and python are the expected versions:
+You can verify that pylint, nosetests and python are the expected versions:
 
 ```
 make env
@@ -56,9 +56,9 @@ The main functionality exists under `eta/<station>` where station is an abbrevia
 
 You can see those names listed under `eta/` or `stations/`.
 
-The app is simple and displays each incoming train for the given station.  It shows the time it will take to get to the station and the length of the train.
+The app displays each incoming train for the given station.  It shows the time it will take to get to the station and the length of the train. It also contains a dropdown form to allow you to choose other stations if you'd like.
 
-I used this at work whenever it was time to leave and I wanted to time my walk to the bart station.
+I used this at work whenever I was about to leave and I wanted to time my walk to the bart station.
 
 ## Feature idea
 
@@ -66,4 +66,4 @@ One thing I wanted to add was alerts that I could set, based on the distance fro
 
 Another idea is to add a json route to each station to view the json.  It could be helpful to others, because the official BART api returns XML.
 
-I'd also love to style it more (CSS and JavaScript), but never had a chance to.
+I'd also love to style it more (CSS and JavaScript).
