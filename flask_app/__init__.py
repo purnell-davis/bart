@@ -1,3 +1,6 @@
+'''
+Loading the config and initializing the views.
+'''
 from flask import Flask
 
 app = Flask(__name__)

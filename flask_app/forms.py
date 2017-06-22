@@ -1,5 +1,6 @@
 '''
-Form data.
+Forms.
+
 This app contains a dropdown menu, listing the BART stations.
 '''
 from flask_wtf import Form

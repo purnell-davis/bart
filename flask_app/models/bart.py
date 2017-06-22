@@ -24,6 +24,7 @@ class BartRestApi(object):
         RETURN str
             XML string data of the etd schedule.
         '''
+        # https://api.bart.gov/docs/etd/etd.aspx
         etd_url = 'http://api.bart.gov/api/etd.aspx?cmd=etd&orig=%s&key=%s' \
           % (station, cls.key)
 
@@ -40,6 +41,7 @@ class BartRestApi(object):
         RETURN str
             XML string data of the stations.
         '''
+        # https://api.bart.gov/docs/stn/stns.aspx
         stns_url = 'http://api.bart.gov/api/stn.aspx?cmd=stns&key=%s' \
           % (cls.key)
 
@@ -102,7 +104,8 @@ def _station_destination(destination_station):
         # set some etd data on the destination level
         destination_dict.setdefault('color', estimate.find('color').text)
         destination_dict.setdefault('hexcolor', estimate.find('hexcolor').text)
-        destination_dict.setdefault('direction', estimate.find('direction').text)
+        destination_dict.setdefault(
+            'direction', estimate.find('direction').text)
 
 
     return destination_dict
@@ -111,6 +114,11 @@ def schedule(station):
     '''
     Use the BART REST API to retrieve the given station's schedule.
     Convert from XML into a dictionary.
+
+    Attributes:
+        station_name
+        station_abbreviation
+        station_destinations
 
     PARAM station str
         Name of the station whose schedule we want to view.
@@ -142,6 +150,10 @@ def stations():
     '''
     Use the BART REST API to retrieve a list of stations.
     Convert from XML into a list.
+
+    Attributes:
+        station_name
+        station_abbreviation
 
     RETURN list
         List of BART stations.

@@ -2,27 +2,28 @@
 The View/Controller for this app.
 Displays the real time bart schedule for a particular station.
 '''
+import os
 import time
 from flask_app import app
 from flask_app.forms import StationForm
 from flask_app.models import bart
 
-from flask import render_template, jsonify, redirect, url_for
+from flask import render_template, jsonify, redirect, url_for, \
+                  send_from_directory
 
 #@TODO: tests/coverage
 #@TODO: .git to final
-#@TODO: docstrings
 #@TODO: linting
+#@TODO: README
 
-@app.route('/eta', methods=['GET', 'POST'])
-def eta_stations():
+@app.route('/favicon.ico')
+def favicon():
     '''
-    Present a list of stations and their respective hyperlinks/routes.
+    favicon for the browser.
     '''
-    stations_list = bart.stations()
-    app.logger.info(stations_list)
-
-    return render_template("eta_stations.html", stations=stations_list)
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico',
+                               mimetype='image/vnd.microsoft.icon')
 
 def _reformat_destinations_for_view(destinations):
     '''
@@ -72,12 +73,22 @@ def eta(station):
         return resp
 
     return render_template("eta.html",
-                           title='BART',
+                           title='BART ETA (%s)' % (station),
                            curr_time=time.strftime('%I:%M:%S %p'),
                            station_form=station_form,
                            station=schedule['station_name'],
                            destinations=_reformat_destinations_for_view(
                                schedule['destinations']))
+
+@app.route('/eta', methods=['GET', 'POST'])
+def eta_stations():
+    '''
+    Present a list of stations and their respective hyperlinks/routes.
+    '''
+    stations_list = bart.stations()
+    app.logger.info(stations_list)
+
+    return render_template("eta_stations.html", stations=stations_list)
 
 def _api_helper():
     '''
