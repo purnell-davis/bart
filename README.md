@@ -1,144 +1,69 @@
-# netflix
-Interview Question For Netflix
+# BART ETA
+Displays BART ETA for trains at specified stations.
 
 ## How to run example and setup environment:
 
-To create environment (tested on OS X 10.12.5), run `make setup`, which does the following commands below:
+Tested against Python 2.7.10 on OSX 10.12.5
+
+Sets up a virtual environment to install packages for testing.
+
+First, create the environment. Call `make setup`, which runs:
 
 ```
-mkdir -p ~/.nflixenv && python3 -m venv ~/.nflixenv
+virtualenv .venv
 ```
 
-Then source the virtualenv.  Typically I do it this way, I add an alias to my .zshrc:
+If virtualenv not installed do:
 
 ```
-alias ntop="cd ~/src/netflix && source ~/.nflixenv/bin/activate"
+pip install virtualenv
 ```
 
-I can then type in:  `ntop` and I cd into my checkout and source a virtualenv.  Next, I then make sure I have the latest packages and that linting and tests pass by running make all:
-
-```make all```
-
-
-I also like to verify that pylint and pytest and python are exactly the versions I expect, so I added a make command env to conveniently check for these:
-
-```make env
-
-(.nflixenv) ➜  netflix git:(master) ✗ make env
-#Show information about environment
-which python3
-/Users/noahgift/.nflixenv/bin/python3
-python3 --version
-Python 3.6.1
-which pytest
-/Users/noahgift/.nflixenv/bin/pytest
-which pylint
-/Users/noahgift/.nflixenv/bin/pylint
+```
+source .venv/bin/activate"
 ```
 
-## How to interact with Commandline tool (Click Framework):
-
-
-Check Version:
+Then make sure the latest packages are installed and that linting and tests pass:
 
 ```
-(.nflixenv) ➜  netflix git:(master) ✗ ./csvutil.py --version
-csvutil.py, version 0.1
+make all
 ```
 
-Check Help:
+
+You can verify that pylint, nose and python are the expected versions:
 
 ```
-(.nflixenv) ➜  netflix git:(master) ✗ ./csvutil.py --help   
-Usage: csvutil.py [OPTIONS] COMMAND [ARGS]...
-
-  CSV Operations Tool
-
-
-
-Options:
-  --version  Show the version and exit.
-  --help     Show this message and exit.
+make env
 ```
 
-## How to run webapp (primary question) and use API
+## How to run the webapp and use the REST API
 
-To run the flask api (if you have followed instructions above), you should be able to run the make command `make start-api`.  The output should look like this:
+To run the flask api, run `make start-api`.  The output should look like this:
 
 ```
-(.nflixenv) ➜  netflix git:(master) ✗ make start-api
-#sets PYTHONPATH to directory above, would do differently in production
-cd flask_app && PYTHONPATH=".." python web.py
-2017-06-17 16:34:15,049 - __main__ - INFO - START Flask
- * Running on http://0.0.0.0:5001/ (Press CTRL+C to quit)
+python run.py
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
  * Restarting with stat
-2017-06-17 16:34:15,473 - __main__ - INFO - START Flask
  * Debugger is active!
- * Debugger PIN: 122-568-160
-2017-06-17 16:34:43,736 - __main__ - INFO - {'/api/help': 'Print available api routes', '/favicon.ico': 'The Favicon', '/': 'Home Page'}
-127.0.0.1 - - [17/Jun/2017 16:34:43] "GET / HTTP/1.1" 200 -
+ * Debugger PIN: 513-965-567
 ```
 
-Next, open a web browser to view API documentation (formatted as HTML):
+Next, open a web browser to view some API documentation:
 
-http://0.0.0.0:5001/
+http://0.0.0.0:5000/
 
-To query the api from the commandline, I would highly recommend httpie:  https://httpie.org/.  To query all available api endpoints and get JSON result.  Here is what the output should look like:
+The main functionality exists under `eta/<station>` where station is an abbreviated string for a particular bart station.
 
-```
-(.nflixenv) ➜  netflix git:(master) ✗ http GET http://0.0.0.0:5001/api/help 
-HTTP/1.0 200 OK
-Content-Length: 106
-Content-Type: application/json
-Date: Sat, 17 Jun 2017 23:46:08 GMT
-Server: Werkzeug/0.12.2 Python/3.6.1
+You can see those names listed under `eta/` or `stations/`.
 
-{
-    "/": "Home Page",
-    "/api/help": "Return all API Routes as JSON",
-    "/favicon.ico": "The Favicon"
-}
-```
+The app is simple and displays each incoming train for the given station.  It shows the time it will take to get to the station and the length of the train.
 
-Alternately, using the requests library you can query the api as follows in IPython:
+I used this at work whenever it was time to leave and I wanted to time my walk to the bart station.
 
-```
+## Feature idea
 
-import requests
-In [1]: url = "http://0.0.0.0:5001/api/csv/aggregate/last_name"
-In [2]: with open("ext/input.csv", "rb") as f:
-    ...:     data = base64.b64encode(f.read())
+One thing I wanted to add was alerts that I could set, based on the distance from the office to the station.  It would tell me exactly when to leave the office to catch the next train.
 
-In [3]: r = requests.post(url, data=data)
+Another idea is to add a json route to each station to view the json.  It could be helpful to others, because the official BART api returns XML.
 
-In [4]: r.content
-Out[4]: b'{"count":{"eagle":34,"lee":3,"smith":27}}'
-
-## How to interact with library:
-
-Typically I use commandline IPython to test libraries that I create.  Here is how to ensure the library is working (should be able to get version number):
-
-```
-In [1]: from nlib import csvops
-
-In [2]: df = csvops.ingest_csv("ext/input.csv")
-2017-06-17 17:00:33,973 - nlib.csvops - INFO - CSV to DF conversion with CSV File Path ext/input.csv
-
-In [3]: df.head()
-Out[3]: 
-  first_name last_name  count
-0      piers     smith     10
-1    kristen     smith     17
-2       john       lee      3
-3        sam     eagle     15
-4       john     eagle     19
-
-```
-
-## Answers to THINGS TO THINK ABOUT
-
-1. Think about the interface to the api.  While the sample input and output indicate csv (including the aggregation) give an interface that is straight forward to use.
-2. How easy is it to change the implementation to do other (or arbitrary aggregations)?
-3. If we wanted to start pulling the data from another source, how would you change your implementation?
-4. If we wanted to hold the data in memory and perform aggregations how would that affect the design?  And the scaling?
-5. At what point would you consider not writing this simple service and look at other solutions to the same problem?  What would you consider instead?
+I'd also love to style it more (CSS and JavaScript), but never had a chance to.
