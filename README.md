@@ -50,7 +50,7 @@ python run.py
 
 Next, open a web browser to view some API documentation:
 
-http://0.0.0.0:5000/
+http://localhost:5000
 
 The main functionality exists under `eta/<station>` where station is an abbreviated string for a particular bart station.
 
